@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Will You Be My Valentine?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #fff5f5;
+        overflow: hidden;
+        touch-action: manipulation;
+      }
+      .cursive {
+        font-family: "Dancing Script", cursive;
+      }
+      .floating-element {
+        position: absolute;
+        pointer-events: none;
+        z-index: 0;
+        animation: float 6s linear infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-10vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      .container-glow {
+        box-shadow: 0 0 50px rgba(220, 38, 38, 0.15);
+      }
+      #no-button {
+        transition: all 0.2s ease;
+      }
+      .fade-in {
+        animation: fadeIn 1s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="flex items-center justify-center min-h-screen">
+    <!-- Background Elements Container -->
+    <div id="bg-container"></div>
+
+    <!-- Main Card -->
+    <div
+      id="main-card"
+      class="relative z-10 bg-white p-8 md:p-12 rounded-3xl shadow-2xl max-w-md w-full mx-4 text-center container-glow fade-in"
+    >
+      <div id="initial-content">
+        <!-- Header Image/Icon -->
+        <div class="mb-6 flex justify-center">
+          <div
+            class="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center animate-bounce"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 text-red-600"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <h1 class="cursive text-5xl md:text-6xl text-red-600 mb-4">
+          Hi Sweetheart,
+        </h1>
+        <p class="text-gray-600 text-lg mb-8">
+          I have a very important question to ask you...
+        </p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-10">
+          Will you be my Valentine?
+        </h2>
+
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-4 relative"
+        >
+          <button
+            id="yes-button"
+            class="px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg transform hover:scale-110 transition-all duration-200 min-w-[140px]"
+          >
+            YES!
+          </button>
+          <button
+            id="no-button"
+            class="px-8 py-4 bg-gray-200 text-gray-600 font-semibold rounded-full text-xl min-w-[140px]"
+          >
+            No
+          </button>
+        </div>
+      </div>
+
+      <!-- Success Content -->
+      <div id="success-content" class="hidden">
+        <div class="mb-6 flex justify-center">
+          <div
+            class="w-32 h-32 bg-red-100 rounded-full flex items-center justify-center animate-pulse"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-20 w-20 text-red-600"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              />
+            </svg>
+          </div>
+        </div>
+        <h1 class="cursive text-5xl text-red-600 mb-4">Yay! I love you!</h1>
+        <p class="text-gray-600 text-lg">
+          You've made me the happiest person alive. See you on the 14th! ❤️
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const yesBtn = document.getElementById("yes-button");
+      const noBtn = document.getElementById("no-button");
+      const initialContent = document.getElementById("initial-content");
+      const successContent = document.getElementById("success-content");
+      const bgContainer = document.getElementById("bg-container");
+
+      let yesScale = 1;
+      let noClickCount = 0;
+
+      const noMessages = [
+        "Are you sure?",
+        "Really??",
+        "Think again!",
+        "Pwease?",
+        "You're breaking my heart :(",
+        "I'll be very sad...",
+        "Give it another thought!",
+        "Click the red one!",
+      ];
+
+      function createFloatingElement() {
+        const el = document.createElement("div");
+        el.classList.add("floating-element");
+
+        // Randomly decide between a heart and a chocolate
+        const isHeart = Math.random() > 0.4; // 60% hearts, 40% chocolates
+
+        if (isHeart) {
+          el.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4d6d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+        } else {
+          const chocolates = ["🍫", "🍬", "🍩", "🍪"];
+          el.innerText =
+            chocolates[Math.floor(Math.random() * chocolates.length)];
+          el.style.fontSize = Math.random() * 20 + 20 + "px";
+        }
+
+        el.style.left = Math.random() * 100 + "vw";
+        el.style.animationDuration = Math.random() * 3 + 4 + "s";
+        el.style.opacity = Math.random() * 0.7 + 0.3;
+
+        bgContainer.appendChild(el);
+
+        setTimeout(() => {
+          el.remove();
+        }, 7000);
+      }
+
+      // Create initial batch and start interval
+      setInterval(createFloatingElement, 400);
+
+      function moveNoButton() {
+        noClickCount++;
+        const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+        const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+
+        noBtn.style.position = "fixed";
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+
+        noBtn.innerText = noMessages[noClickCount % noMessages.length];
+
+        yesScale += 0.15;
+        yesBtn.style.transform = `scale(${yesScale})`;
+      }
+
+      noBtn.addEventListener("mouseover", moveNoButton);
+      noBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        moveNoButton();
+      });
+
+      yesBtn.addEventListener("click", () => {
+        initialContent.classList.add("hidden");
+        successContent.classList.remove("hidden");
+
+        const duration = 5 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = {
+          startVelocity: 30,
+          spread: 360,
+          ticks: 60,
+          zIndex: 0,
+        };
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        const interval = setInterval(function () {
+          const timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) return clearInterval(interval);
+
+          const particleCount = 50 * (timeLeft / duration);
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            })
+          );
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            })
+          );
+        }, 250);
+      });
+    </script>
+  </body>
+</html>
